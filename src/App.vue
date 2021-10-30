@@ -22,13 +22,20 @@ export default {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;800&display=swap");
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Raleway", sans-serif;
+    font-weight: 600;
 }
 
 #app {
     min-height: 100vh;
+}
+
+button {
 }
 </style>
