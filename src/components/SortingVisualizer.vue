@@ -49,9 +49,12 @@ export default {
             return height;
         },
         mergeSort() {
-            const sortedArr = algorithm.mergeSort(this.array);
+            const copyArr = [...this.array];
+            const steps = algorithm.doMergeSort(copyArr);
 
-            this.array = [...sortedArr];
+            steps.forEach((step, index) => {
+                const bars = document.querySelectorAll("li");
+            });
         },
     },
     mounted() {
@@ -90,8 +93,8 @@ const getRandomInt = (min, max) => {
             li {
                 list-style: none;
                 background: lightcoral;
-                width: 2px;
-                max-width: 2px;
+                width: 3px;
+                max-width: 3px !important;
                 height: 100%;
             }
         }
