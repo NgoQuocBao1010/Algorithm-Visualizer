@@ -55,15 +55,16 @@ const merge = (array, auxArray, low, mid, high, steps) => {
     // Merge the 2 parts
     while (i <= mid && j <= high) {
         steps.push([i, j, "compare"]);
+        steps.push([i, j, "revert"]);
 
         if (auxArray[i] <= auxArray[j]) {
-            steps.push([k, i, "swap"]);
+            steps.push([k, auxArray[i], "swap"]);
             array[k] = auxArray[i];
 
             k++;
             i++;
         } else {
-            steps.push([k, j, "swap"]);
+            steps.push([k, auxArray[j], "swap"]);
             array[k] = auxArray[j];
 
             k++;
@@ -73,14 +74,14 @@ const merge = (array, auxArray, low, mid, high, steps) => {
 
     // Merge the left over there is still element has not checked
     while (i <= mid) {
-        steps.push([k, i, "swap"]);
+        steps.push([k, auxArray[i], "swap"]);
         array[k] = auxArray[i];
         k++;
         i++;
     }
 
     while (j <= high) {
-        steps.push([k, j, "swap"]);
+        steps.push([k, auxArray[j], "swap"]);
         array[k] = auxArray[j];
 
         k++;

@@ -37,23 +37,48 @@ export default {
             /* Generate a new array */
             this.array = [];
             for (let i = 0; i < length; i++) {
-                this.array.push(getRandomInt(5, 200));
+                this.array.push(getRandomInt(15, 500));
             }
         },
         calcHeight(value) {
             /* Calculate the height of each elemen depends on the container height */
 
             const height = Math.round(
-                (value * this.arrayContainerHeight) / 200
+                (value * this.arrayContainerHeight) / 500
             );
             return height;
         },
         mergeSort() {
+            const animationSpeed = 100;
+
             const copyArr = [...this.array];
             const steps = algorithm.doMergeSort(copyArr);
 
             steps.forEach((step, index) => {
                 const bars = document.querySelectorAll("li");
+
+                const [barOneIndex, secondVal, action] = step;
+
+                if (action !== "swap") {
+                    const barOneStyle = bars[barOneIndex].style;
+                    const barTwoStyle = bars[secondVal].style;
+
+                    const color = action === "compare" ? "blue" : "lightcoral";
+
+                    setTimeout(() => {
+                        barOneStyle.backgroundColor = color;
+                        barTwoStyle.backgroundColor = color;
+                    }, index * animationSpeed);
+                } else {
+                    setTimeout(() => {
+                        const [barOneIndex, val] = step;
+                        const barOneStyle = bars[barOneIndex].style;
+
+                        this.array[barOneIndex] = val;
+                        // const newHeight = this.calcHeight(val);
+                        // barOneStyle.height = `${newHeight}px`;
+                    }, index * animationSpeed);
+                }
             });
         },
     },
