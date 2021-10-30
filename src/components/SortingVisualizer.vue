@@ -49,7 +49,7 @@ export default {
             return height;
         },
         mergeSort() {
-            const animationSpeed = 100;
+            const compareSpeed = 1200;
 
             const copyArr = [...this.array];
             const steps = algorithm.doMergeSort(copyArr);
@@ -68,7 +68,7 @@ export default {
                     setTimeout(() => {
                         barOneStyle.backgroundColor = color;
                         barTwoStyle.backgroundColor = color;
-                    }, index * animationSpeed);
+                    }, index * compareSpeed);
                 } else {
                     setTimeout(() => {
                         const [barOneIndex, val] = step;
@@ -76,8 +76,7 @@ export default {
 
                         this.array[barOneIndex] = val;
                         // const newHeight = this.calcHeight(val);
-                        // barOneStyle.height = `${newHeight}px`;
-                    }, index * animationSpeed);
+                    }, index * compareSpeed);
                 }
             });
         },
