@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "sass": "^1.43.4",
+    "time-events-manager": "^0.1.1",
     "vue": "^3.2.16"
   },
   "devDependencies": {

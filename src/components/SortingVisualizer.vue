@@ -15,6 +15,7 @@
             </ul>
         </div>
 
+        {{ message }}
         <!-- Control buttons -->
         <div class="control-container">
             <h3>Sorting Control</h3>
@@ -32,7 +33,7 @@
                         v-model="sortConfig.length"
                         type="range"
                         min="10"
-                        max="500"
+                        max="300"
                         class="slider"
                     />
                 </div>
@@ -46,8 +47,7 @@
                         v-model="sortConfig.animationTime"
                         type="range"
                         min="1"
-                        step="5"
-                        max="500"
+                        max="5"
                         class="slider"
                     />
                 </div>
@@ -69,9 +69,12 @@ export default {
             barWidth: 5,
 
             sortConfig: {
-                length: 20,
+                length: 35,
                 animationTime: 5,
             },
+            message: "",
+
+            timeoutCapture: [],
         };
     },
     watch: {
@@ -92,6 +95,8 @@ export default {
             for (let i = 0; i < this.sortConfig.length; i++) {
                 this.array.push(getRandomInt(50, 900));
             }
+
+            this.clearAllTimeout();
         },
         calcHeight(value) {
             /* Calculate the height of each elemen depends on the container height */
@@ -103,10 +108,16 @@ export default {
         },
         async mergeSort() {
             /* Merge sort algorithm */
+
+            if (isSorted(this.array)) {
+                this.message = "Array is already sorted";
+                return;
+            }
+
+            this.message = "";
             const copyArr = [...this.array];
             const steps = algorithm.doMergeSort(copyArr);
 
-            console.log("Start");
             steps.forEach(async (step, index) => {
                 const bars = document.querySelectorAll("li");
 
@@ -118,19 +129,26 @@ export default {
 
                     const color = action === "compare" ? "blue" : "lightcoral";
 
-                    setTimeout(() => {
-                        barOneStyle.backgroundColor = color;
-                        barTwoStyle.backgroundColor = color;
-                    }, index * this.sortConfig.animationTime);
+                    this.timeoutCapture.push(
+                        setTimeout(() => {
+                            barOneStyle.backgroundColor = color;
+                            barTwoStyle.backgroundColor = color;
+                        }, index * this.sortConfig.animationTime)
+                    );
                 } else {
-                    setTimeout(() => {
-                        const [barOneIndex, val] = step;
-                        this.array[barOneIndex] = val;
-                    }, index * this.sortConfig.animationTime);
+                    this.timeoutCapture.push(
+                        setTimeout(() => {
+                            const [barOneIndex, val] = step;
+                            this.array[barOneIndex] = val;
+                        }, index * this.sortConfig.animationTime)
+                    );
                 }
             });
-
-            console.log("Done");
+        },
+        clearAllTimeout() {
+            for (let i = 0; i < this.timeoutCapture.length; i++) {
+                clearTimeout(this.timeoutCapture[i]);
+            }
         },
     },
     mounted() {
@@ -147,9 +165,16 @@ const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-function timeoutMF(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const isSorted = (arr) => {
+    /* Check if arr is sorted from small to big */
+    const arrLength = arr.length;
+
+    if (arrLength === 1 || arrLength === 0) return true;
+
+    const reduceArr = arr.slice(0, -1);
+
+    return arr[arrLength - 1] >= arr[arrLength - 2] && isSorted(reduceArr);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -207,7 +232,8 @@ function timeoutMF(ms) {
         .buttons {
             margin: 1em 0;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
+            justify-content: space-between;
             gap: 2rem;
 
             button {
