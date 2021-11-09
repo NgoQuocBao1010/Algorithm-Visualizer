@@ -10,12 +10,20 @@
                         width: `${barWidth}px !important`,
                     }"
                 >
-                    <span v-if="barWidth > 40" class="value">{{ value }}</span>
+                    <span
+                        v-if="array.length < 100"
+                        class="value"
+                        :style="{
+                            fontSize:
+                                barWidth <= 32 ? `${barWidth / 2}px` : '16px',
+                        }"
+                    >
+                        {{ value }}
+                    </span>
                 </li>
             </ul>
         </div>
 
-        {{ message }}
         <!-- Control buttons -->
         <div class="control-container">
             <h3>Sorting Control</h3>
@@ -38,16 +46,16 @@
                     />
                 </div>
 
-                <!-- Array length input -->
+                <!-- Animation length input -->
                 <div class="inputs">
-                    <label for="arrayLength">
+                    <label for="animation">
                         Sort Animation: {{ sortConfig.animationTime }}
                     </label>
                     <input
                         v-model="sortConfig.animationTime"
                         type="range"
                         min="1"
-                        max="5"
+                        max="10"
                         class="slider"
                     />
                 </div>
@@ -93,7 +101,7 @@ export default {
             // generate random number for array
             this.array = [];
             for (let i = 0; i < this.sortConfig.length; i++) {
-                this.array.push(getRandomInt(50, 900));
+                this.array.push(getRandomInt(40, 900));
             }
 
             this.clearAllTimeout();
@@ -172,7 +180,6 @@ const isSorted = (arr) => {
     if (arrLength === 1 || arrLength === 0) return true;
 
     const reduceArr = arr.slice(0, -1);
-
     return arr[arrLength - 1] >= arr[arrLength - 2] && isSorted(reduceArr);
 };
 </script>
@@ -233,7 +240,7 @@ const isSorted = (arr) => {
             margin: 1em 0;
             display: flex;
             align-items: flex-end;
-            justify-content: space-between;
+            justify-content: space-around;
             gap: 2rem;
 
             button {
