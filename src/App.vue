@@ -1,24 +1,14 @@
 <template>
+    <!-- Navigation -->
     <Navigation />
 
+    <!-- Sorting -->
     <SortingVisualizer />
 </template>
 
-<script>
+<script setup>
 import Navigation from "./components/Navigation.vue";
 import SortingVisualizer from "./components/SortingVisualizer.vue";
-
-export default {
-    components: {
-        Navigation,
-        SortingVisualizer,
-    },
-    data() {
-        return {
-            name: "Bao",
-        };
-    },
-};
 </script>
 
 <style>
@@ -34,8 +24,5 @@ export default {
 
 #app {
     min-height: 100vh;
-}
-
-button {
 }
 </style>

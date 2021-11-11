@@ -1,12 +1,120 @@
+<script setup>
+import { onMounted, watch, ref } from "vue";
+
+import algorithm from "../algorithm/sorting";
+
+// * Array Container
+let arrayContainer = $ref(null);
+let containerHeight = $computed(() => arrayContainer.clientHeight);
+let containerWidth = $computed(() => arrayContainer.clientWidth);
+let barWidth = $ref(5);
+
+const calcBarHeight = (value) => {
+    return Math.round((value * containerHeight) / 1000);
+};
+
+// * Sort configuaration
+let sortConfig = $ref({
+    length: 70,
+    animationTime: 5,
+});
+watch(
+    () => sortConfig.length,
+    () => generateArray()
+);
+
+// * Timeout Capture
+const timeoutCapture = [];
+const clearAllTimeout = () => {
+    for (let i = 0; i < timeoutCapture.length; i++) {
+        clearTimeout(timeoutCapture[i]);
+    }
+};
+
+// * Array itself
+let array = $ref([]);
+const generateArray = () => {
+    barWidth = Math.floor(containerWidth / sortConfig.length);
+
+    clearAllTimeout();
+
+    array = [];
+    for (let i = 0; i < sortConfig.length; i++) {
+        array.push(generateRandomInt({}));
+    }
+};
+
+// * Sort algorithm
+const mergeSort = () => {
+    /* Trigger merge sort animation */
+
+    if (isSorted(array)) return;
+
+    const copyArr = [...array];
+    const steps = algorithm.doMergeSort(copyArr);
+
+    steps.forEach((step, index) => {
+        const bars = document.querySelectorAll("li");
+
+        const [barOneIndex, secondVal, action] = step;
+
+        if (action !== "swap") {
+            const barOneStyle = bars[barOneIndex].style;
+            const barTwoStyle = bars[secondVal].style;
+
+            const color = action === "compare" ? "blue" : "lightcoral";
+
+            timeoutCapture.push(
+                setTimeout(() => {
+                    barOneStyle.backgroundColor = color;
+                    barTwoStyle.backgroundColor = color;
+                }, index * sortConfig.animationTime)
+            );
+        } else {
+            timeoutCapture.push(
+                setTimeout(() => {
+                    const [barOneIndex, val] = step;
+                    array[barOneIndex] = val;
+                }, index * sortConfig.animationTime)
+            );
+        }
+    });
+};
+
+// ** Life cycle hooks
+onMounted(() => {
+    generateArray();
+});
+
+// ** Helper functions
+const generateRandomInt = ({ min = 40, max = 900 }) => {
+    /* Generate random int between min and max args */
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+const isSorted = (arr) => {
+    /* Check if arr is sorted from small to big */
+    const arrLength = arr.length;
+
+    if (arrLength === 1 || arrLength === 0) return true;
+
+    const reduceArr = arr.slice(0, -1);
+    return arr[arrLength - 1] >= arr[arrLength - 2] && isSorted(reduceArr);
+};
+</script>
+
 <template>
     <div class="wrapper">
+        <!-- Array Container -->
         <div class="array-container">
             <ul ref="arrayContainer">
                 <li
                     v-for="(value, index) in array"
                     :key="index"
                     :style="{
-                        height: `${calcHeight(value)}px`,
+                        height: `${calcBarHeight(value)}px`,
                         width: `${barWidth}px !important`,
                     }"
                 >
@@ -14,8 +122,7 @@
                         v-if="array.length < 100"
                         class="value"
                         :style="{
-                            fontSize:
-                                barWidth <= 32 ? `${barWidth / 2}px` : '16px',
+                            fontSize: barWidth <= 32 ? `${barWidth / 2}px` : '16px',
                         }"
                     >
                         {{ value }}
@@ -24,7 +131,7 @@
             </ul>
         </div>
 
-        <!-- Control buttons -->
+        <!-- Control Panel -->
         <div class="control-container">
             <h3>Sorting Control</h3>
             <div class="buttons">
@@ -63,126 +170,6 @@
         </div>
     </div>
 </template>
-
-<script>
-import algorithm from "../algorithm/sorting";
-
-export default {
-    name: "SortingVisualizer",
-    data() {
-        return {
-            array: [],
-            arrayContainerHeight: null,
-
-            barWidth: 5,
-
-            sortConfig: {
-                length: 35,
-                animationTime: 5,
-            },
-            message: "",
-
-            timeoutCapture: [],
-        };
-    },
-    watch: {
-        "sortConfig.length"() {
-            this.generateArray();
-        },
-    },
-    methods: {
-        generateArray() {
-            /* Generate a new array */
-
-            // Calculate the barwidth to nicely fit the container
-            const containerWidth = this.$refs.arrayContainer.clientWidth;
-            this.barWidth = Math.floor(containerWidth / this.sortConfig.length);
-
-            // generate random number for array
-            this.array = [];
-            for (let i = 0; i < this.sortConfig.length; i++) {
-                this.array.push(getRandomInt(40, 900));
-            }
-
-            this.clearAllTimeout();
-        },
-        calcHeight(value) {
-            /* Calculate the height of each elemen depends on the container height */
-
-            const height = Math.round(
-                (value * this.arrayContainerHeight) / 1000
-            );
-            return height;
-        },
-        async mergeSort() {
-            /* Merge sort algorithm */
-
-            if (isSorted(this.array)) {
-                this.message = "Array is already sorted";
-                return;
-            }
-
-            this.message = "";
-            const copyArr = [...this.array];
-            const steps = algorithm.doMergeSort(copyArr);
-
-            steps.forEach(async (step, index) => {
-                const bars = document.querySelectorAll("li");
-
-                const [barOneIndex, secondVal, action] = step;
-
-                if (action !== "swap") {
-                    const barOneStyle = bars[barOneIndex].style;
-                    const barTwoStyle = bars[secondVal].style;
-
-                    const color = action === "compare" ? "blue" : "lightcoral";
-
-                    this.timeoutCapture.push(
-                        setTimeout(() => {
-                            barOneStyle.backgroundColor = color;
-                            barTwoStyle.backgroundColor = color;
-                        }, index * this.sortConfig.animationTime)
-                    );
-                } else {
-                    this.timeoutCapture.push(
-                        setTimeout(() => {
-                            const [barOneIndex, val] = step;
-                            this.array[barOneIndex] = val;
-                        }, index * this.sortConfig.animationTime)
-                    );
-                }
-            });
-        },
-        clearAllTimeout() {
-            for (let i = 0; i < this.timeoutCapture.length; i++) {
-                clearTimeout(this.timeoutCapture[i]);
-            }
-        },
-    },
-    mounted() {
-        this.generateArray();
-
-        this.arrayContainerHeight = this.$refs.arrayContainer.clientHeight;
-    },
-};
-
-const getRandomInt = (min, max) => {
-    /* Generate a random number */
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-const isSorted = (arr) => {
-    /* Check if arr is sorted from small to big */
-    const arrLength = arr.length;
-
-    if (arrLength === 1 || arrLength === 0) return true;
-
-    const reduceArr = arr.slice(0, -1);
-    return arr[arrLength - 1] >= arr[arrLength - 2] && isSorted(reduceArr);
-};
-</script>
 
 <style lang="scss" scoped>
 .wrapper {
