@@ -15,7 +15,7 @@ const calcBarHeight = (value) => {
 
 // * Sort configuaration
 let sortConfig = $ref({
-    length: 70,
+    length: 80,
     animationTime: 5,
 });
 watch(
@@ -54,7 +54,7 @@ const mergeSort = () => {
     const steps = algorithm.doMergeSort(copyArr);
 
     steps.forEach((step, index) => {
-        const bars = document.querySelectorAll("li");
+        const bars = document.querySelectorAll("li.element");
 
         const [barOneIndex, secondVal, action] = step;
 
@@ -111,6 +111,7 @@ const isSorted = (arr) => {
         <div class="array-container">
             <ul ref="arrayContainer">
                 <li
+                    class="element"
                     v-for="(value, index) in array"
                     :key="index"
                     :style="{
@@ -189,10 +190,11 @@ const isSorted = (arr) => {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            border-radius: 1.5rem;
             box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
                 rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
-            li {
+            li.element {
                 list-style: none;
                 background: lightcoral;
                 height: 100%;
@@ -201,6 +203,9 @@ const isSorted = (arr) => {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px;
 
                 span {
                     font-size: 16px;

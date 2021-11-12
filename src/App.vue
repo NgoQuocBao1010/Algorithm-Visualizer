@@ -13,6 +13,7 @@ import SortingVisualizer from "./components/SortingVisualizer.vue";
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&display=swap");
 
 * {
     margin: 0;
