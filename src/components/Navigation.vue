@@ -23,20 +23,16 @@ export default {
             </div>
         </div>
 
-        <div class="select-algo">
-            <p class="selected">Sort Alogrithm <i class="fas fa-caret-down"></i></p>
-            <ul class="active">
-                <li><router-link to="#">Sort Alogrithm</router-link></li>
-                <li><router-link to="#">Path Finding Alogrithm</router-link></li>
-            </ul>
-        </div>
-
         <!-- Related Links -->
-        <div class="related-links">
-            <a href="https://github.com/NgoQuocBao1010" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
+        <ul class="related-links">
+            <li><router-link to="/sort">Sorting Algorithm</router-link></li>
+            <li><router-link to="/path">Pathfinding Algorithm</router-link></li>
+            <li>
+                <a href="https://github.com/NgoQuocBao1010" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -75,34 +71,29 @@ export default {
         }
     }
 
-    .select-algo {
-        padding: 8px 16px;
-        min-width: 300px;
-        color: #fff;
-        text-align: center;
-        background: lightcoral;
-        border-radius: 1rem;
-
-        cursor: pointer;
-        position: relative;
-
-        i {
-            margin: 0 0.2rem;
-        }
-
-        & ul {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-    }
-
     .related-links {
-        margin-left: auto;
-        a {
-            text-decoration: none;
-            color: black;
-            font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+
+        li {
+            list-style: none;
+            font-size: 1.2rem;
+            padding-bottom: 3px;
+
+            a {
+                text-decoration: none;
+                color: black;
+
+                i {
+                    font-size: 2rem;
+                }
+
+                &.router-link-active {
+                    border-bottom: 0.1em solid lightcoral;
+                    color: lightcoral;
+                }
+            }
         }
     }
 }

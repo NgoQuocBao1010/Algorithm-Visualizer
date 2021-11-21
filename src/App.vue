@@ -1,15 +1,13 @@
+<script setup>
+import Navigation from "./components/Navigation.vue";
+</script>
+
 <template>
     <!-- Navigation -->
     <Navigation />
 
-    <!-- Sorting -->
-    <SortingVisualizer />
+    <router-view />
 </template>
-
-<script setup>
-import Navigation from "./components/Navigation.vue";
-import SortingVisualizer from "./components/SortingVisualizer.vue";
-</script>
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;800&display=swap");
