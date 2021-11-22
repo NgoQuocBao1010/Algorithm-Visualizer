@@ -72,8 +72,8 @@ const dragToMakeWalls = (event, position) => {
                     :state="matrix[row][col]"
                     @click="updateState({ row, col })"
                     @mouseover="dragToMakeWalls($event, { row, col })"
-                    @dragover.prevent=""
-                    @dragenter.prevent=""
+                    @dragover.prevent="dragToMakeWalls($event, { row, col })"
+                    @dragenter.prevent="dragToMakeWalls($event, { row, col })"
                 />
             </div>
         </div>
