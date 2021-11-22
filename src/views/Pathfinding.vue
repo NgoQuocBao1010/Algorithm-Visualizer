@@ -36,6 +36,7 @@ const updateState = (position) => {
         }
 
         startPos = position;
+        selectedState = 1;
     } else if (selectedState === 1) {
         // select end node
         const { row, col } = position;
@@ -47,6 +48,7 @@ const updateState = (position) => {
         }
 
         endPos = position;
+        selectedState = 2;
     } else if (selectedState === 2) {
         // select walls
         const { row, col } = position;
@@ -72,6 +74,7 @@ const dragToMakeWalls = (event, position) => {
                     :state="matrix[row][col]"
                     @click="updateState({ row, col })"
                     @mouseover="dragToMakeWalls($event, { row, col })"
+                    @dragstart="dragToMakeWalls($event, { row, col })"
                     @dragover.prevent="dragToMakeWalls($event, { row, col })"
                     @dragenter.prevent="dragToMakeWalls($event, { row, col })"
                 />
