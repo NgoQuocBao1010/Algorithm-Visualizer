@@ -121,8 +121,6 @@ const startVisualizer = () => {
     // Start animation
     pathFinding.bfsAlgorithm(board, startPos, endPos, animations);
 
-    console.log(animations.length);
-
     animations.forEach((step, index) => {
         const { state } = step;
 
@@ -151,8 +149,9 @@ const clearPath = () => {
 };
 
 const clearAllTimeout = () => {
-    for (let i = 0; i < timeoutContainers.length; i++) {
-        clearTimeout(timeoutContainers[i]);
+    while (timeoutContainers.length > 0) {
+        const timeout = timeoutContainers.pop();
+        clearTimeout(timeout);
     }
 };
 </script>
@@ -247,7 +246,7 @@ const clearAllTimeout = () => {
 
     .control-panel {
         width: 95%;
-        margin: 1rem auto;
+        margin: 2rem auto;
         display: flex;
         gap: 1rem;
 

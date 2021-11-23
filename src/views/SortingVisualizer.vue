@@ -53,7 +53,6 @@ const mergeSort = () => {
 
     const copyArr = [...array];
     const steps = algorithm.doMergeSort(copyArr);
-    console.log(steps.length);
 
     steps.forEach((step, index) => {
         const bars = document.querySelectorAll("li.element");
