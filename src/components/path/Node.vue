@@ -8,16 +8,22 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="node-wrapper" :class="state"></div>
+    <div class="node-wrapper" :class="[state, { animation: state }]"></div>
 </template>
 
 <style lang="scss" scope>
 .node-wrapper {
     flex: 1;
     aspect-ratio: 1 / 1;
-    border: 0.05em solid rgb(145, 140, 140);
+    border: 0.01em solid rgb(145, 140, 140);
     border-radius: 5px;
+
+    transition: all 0.2s ease;
     cursor: pointer;
+
+    // &.animation {
+    //     animation: bounce 0.2s linear;
+    // }
 
     &.start {
         background-color: lightcoral;
@@ -31,8 +37,25 @@ const props = defineProps({
         background-color: black;
     }
 
-    &.path {
+    &.visited {
+        background-color: lightslategrey;
+    }
+
+    &.checking {
         background-color: lightgreen;
+    }
+
+    &.path {
+        background-color: lawngreen;
+    }
+
+    @keyframes bounce {
+        0% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+        }
     }
 }
 </style>

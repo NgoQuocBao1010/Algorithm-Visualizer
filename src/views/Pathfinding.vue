@@ -9,7 +9,7 @@ import pathFinding from "../algorithm/pathfinding.js";
 const toast = useToast();
 
 const rows = 12;
-const columns = 40;
+const columns = 45;
 
 let board = $ref(
     Array(rows)
@@ -22,6 +22,7 @@ const clearBoard = () => {
     board = Array(rows)
         .fill()
         .map(() => Array(columns).fill(null));
+    path = null;
 
     selectedState = 0;
     startPos = null;
@@ -41,6 +42,9 @@ watch(
             }
             const { row, col } = newVal;
             board[row][col] = "start";
+        } else {
+            const { row: oldRow, col: oldCol } = oldVal;
+            board[oldRow][oldCol] = null;
         }
     }
 );
@@ -55,6 +59,9 @@ watch(
             }
             const { row, col } = newVal;
             board[row][col] = "end";
+        } else {
+            const { row: oldRow, col: oldCol } = oldVal;
+            board[oldRow][oldCol] = null;
         }
     }
 );
@@ -100,30 +107,43 @@ const startVisualizer = () => {
             hideProgressBar: true,
         });
 
-    path = pathFinding.bfsAlgorithm(board, startPos, endPos);
+    const animations = [];
+    pathFinding.bfsAlgorithm(board, startPos, endPos, animations);
 
-    if (!path)
-        return toast.info("No path found", {
-            position: "top-center",
-            timeout: 2000,
-            hideProgressBar: true,
-        });
-
-    path.forEach((step) => {
-        const [row, col] = step;
-        board[row][col] = "path";
+    animations.forEach((step, index) => {
+        setTimeout(() => {
+            const { state } = step;
+            const { checkingNodes } = step;
+            checkingNodes.forEach((node) => {
+                const [row, col] = node;
+                board[row][col] = state;
+            });
+            // if (state === "visited") {
+            //     const { row, col } = step;
+            //     board[row][col] = state;
+            // } else if (state === "checking") {
+            //     const { checkingNodes } = step;
+            //     checkingNodes.forEach((node) => {
+            //         const [row, col] = node;
+            //         board[row][col] = state;
+            //     });
+            // }
+        }, index * 1);
     });
 };
 
 const clearPath = () => {
     // Clear old path
     if (!path) return;
+
     path.forEach((step, index) => {
         const [row, col] = step;
 
         if (index === 0) startPos = { row, col };
-        else if (index === path.length - 1) endPos = { row, col };
-        else board[row][col] = null;
+        else if (index === path.length - 1) {
+            endPos = { row, col };
+            console.log("fuck end node");
+        } else board[row][col] = null;
     });
 
     path = null;
@@ -177,7 +197,7 @@ const clearPath = () => {
                 <button @click="clearBoard">
                     <i class="fas fa-chess-board"></i>Clear Board
                 </button>
-                <button @click="startVisualizer">
+                <button @click="startVisualizer" class="start">
                     <i class="fas fa-play-circle"></i>Start Visualizer
                 </button>
             </div>
@@ -195,17 +215,11 @@ const clearPath = () => {
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        gap: 1px;
+        gap: 2px;
 
         .row {
             display: flex;
-            gap: 1px;
-
-            .column {
-                flex: 1;
-                aspect-ratio: 1 / 1;
-                border: 0.05em solid rgb(145, 140, 140);
-            }
+            gap: 2px;
         }
     }
 
@@ -239,6 +253,12 @@ const clearPath = () => {
                 &.active {
                     background: none;
                     color: lightcoral;
+                }
+
+                &.start {
+                    border: 2px solid lightgreen;
+                    background: lightgreen;
+                    color: #222;
                 }
 
                 &:hover {

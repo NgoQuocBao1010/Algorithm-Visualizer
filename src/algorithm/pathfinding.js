@@ -42,7 +42,7 @@ const reconstructPath = (prev, board, endPos) => {
     return path;
 };
 
-const bfsAlgorithm = (board, startPos, endPos) => {
+const bfsAlgorithm = (board, startPos, endPos, animations) => {
     // ** Breadth-First Search algorithm
     let visited = board.map((row) => {
         return row.slice().fill(false);
@@ -71,12 +71,16 @@ const bfsAlgorithm = (board, startPos, endPos) => {
 
         // ** Found the end node
         if (row === endRow && col === endCol) {
-            return reconstructPath(prev, board, endPos);
+            reconstructPath(prev, board, endPos);
+            break;
         }
 
         // ** Mark that node is visited
-        // if ()
+        // if (row !== startRow || col !== startCol) {
+        //     animations.push({ row, col, state: "visited" });
+        // }
 
+        const checkingNodes = [];
         getNeighbours(row, col, board).forEach((neighbours) => {
             const [nRow, nCol] = neighbours;
 
@@ -85,11 +89,15 @@ const bfsAlgorithm = (board, startPos, endPos) => {
                 rowQueue.push(nRow);
                 colQueue.push(nCol);
                 prev[nRow][nCol] = [row, col];
+                checkingNodes.push([nRow, nCol]);
             }
         });
+
+        animations.push({ checkingNodes, state: "checking" });
+        animations.push({ checkingNodes, state: "visited" });
     }
 
-    return null;
+    return animations;
 };
 
 export default { bfsAlgorithm };
