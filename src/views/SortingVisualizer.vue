@@ -15,7 +15,7 @@ const calcBarHeight = (value) => {
 
 // * Sort configuaration
 let sortConfig = $ref({
-    length: 80,
+    length: 50,
     animationTime: 5,
 });
 watch(
@@ -24,13 +24,12 @@ watch(
 );
 
 // * Timeout Capture
-let timeoutCapture = [];
+const timeoutCapture = [];
 const clearAllTimeout = () => {
-    for (let i = 0; i < timeoutCapture.length; i++) {
-        clearTimeout(timeoutCapture[i]);
+    while (timeoutCapture.length > 0) {
+        const timeout = timeoutCapture.pop();
+        clearTimeout(timeout);
     }
-
-    timeoutCapture = [];
 };
 
 // * Array itself
@@ -82,6 +81,51 @@ const mergeSort = () => {
     });
 };
 
+const quickSort = () => {
+    if (isSorted(array) || timeoutCapture.length > 0) return;
+
+    const copyArr = [...array];
+    const steps = algorithm.doQuickSort(copyArr);
+    // console.log(steps);
+
+    steps.forEach((step, stepIndex) => {
+        const bars = document.querySelectorAll("li.element");
+
+        const { state } = step;
+        if (state === "pivot") {
+            const { index } = step;
+            timeoutCapture.push(
+                setTimeout(() => {
+                    bars[index].style.backgroundColor = "blue";
+                }, stepIndex * sortConfig.animationTime)
+            );
+        } else if (state === "mark") {
+            const { index1, index2 } = step;
+            timeoutCapture.push(
+                setTimeout(() => {
+                    bars[index1].style.backgroundColor = "green";
+                    bars[index2].style.backgroundColor = "green";
+                }, stepIndex * sortConfig.animationTime)
+            );
+        } else if (state === "swap") {
+            const { index1, index2 } = step;
+            timeoutCapture.push(
+                setTimeout(() => {
+                    swap(index1, index2);
+                }, stepIndex * sortConfig.animationTime)
+            );
+        } else if (state === "invert") {
+            const { index1, index2 } = step;
+            timeoutCapture.push(
+                setTimeout(() => {
+                    bars[index1].style.backgroundColor = "lightcoral";
+                    bars[index2].style.backgroundColor = "lightcoral";
+                }, stepIndex * sortConfig.animationTime)
+            );
+        }
+    });
+};
+
 // ** Life cycle hooks
 onMounted(() => {
     generateArray();
@@ -104,6 +148,12 @@ const isSorted = (arr) => {
     const reduceArr = arr.slice(0, -1);
     return arr[arrLength - 1] >= arr[arrLength - 2] && isSorted(reduceArr);
 };
+
+const swap = (pos1, pos2) => {
+    const tmp = array[pos1];
+    array[pos1] = array[pos2];
+    array[pos2] = tmp;
+};
 </script>
 
 <template>
@@ -118,7 +168,6 @@ const isSorted = (arr) => {
                     :style="{
                         height: `${calcBarHeight(value)}px`,
                         width: `${barWidth}px !important`,
-                        background: 'lightcoral',
                     }"
                 >
                     <span
@@ -165,7 +214,7 @@ const isSorted = (arr) => {
                         v-model="sortConfig.animationTime"
                         type="range"
                         min="1"
-                        max="10"
+                        max="50"
                         class="slider"
                     />
                 </div>

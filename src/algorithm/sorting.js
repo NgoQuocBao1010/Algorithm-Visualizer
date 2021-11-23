@@ -62,4 +62,50 @@ const merge = (array, auxArray, low, mid, high, steps) => {
     }
 };
 
-export default { doMergeSort };
+/* Quick sort */
+const swap = (array, pos1, pos2) => {
+    const tmp = array[pos1];
+    array[pos1] = array[pos2];
+    array[pos2] = tmp;
+};
+
+const partition = (array, low, high, animations) => {
+    const pivot = array[high];
+    animations.push({ index: high, state: "pivot" });
+
+    let i = low - 1;
+
+    for (let j = low; j < high; j++) {
+        if (array[j] < pivot) {
+            i++;
+            swap(array, i, j);
+            animations.push({ index1: i, index2: j, state: "mark" });
+            animations.push({ index1: i, index2: j, state: "swap" });
+            animations.push({ index1: i, index2: j, state: "invert" });
+        }
+    }
+
+    swap(array, i + 1, high);
+    animations.push({ index1: i + 1, index2: high, state: "mark" });
+    animations.push({ index1: i + 1, index2: high, state: "swap" });
+    animations.push({ index1: i + 1, index2: high, state: "invert" });
+    return i + 1;
+};
+
+const quickSort = (array, low, high, animations) => {
+    if (low < high) {
+        const pivot = partition(array, low, high, animations);
+
+        quickSort(array, low, pivot - 1, animations);
+        quickSort(array, pivot + 1, high, animations);
+    }
+};
+
+const doQuickSort = (array) => {
+    const animations = [];
+    quickSort(array, 0, array.length - 1, animations);
+
+    return animations;
+};
+
+export default { doMergeSort, doQuickSort };
