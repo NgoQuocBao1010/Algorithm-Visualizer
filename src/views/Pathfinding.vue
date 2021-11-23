@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "vue";
+import { watch } from "vue";
 import { useToast } from "vue-toastification";
 
 import Node from "../components/path/Node.vue";
@@ -11,7 +11,7 @@ const toast = useToast();
 const rows = 12;
 const columns = 40;
 
-let matrix = $ref(
+let board = $ref(
     Array(rows)
         .fill()
         .map(() => Array(columns).fill(null))
@@ -19,7 +19,7 @@ let matrix = $ref(
 
 const clearBoard = () => {
     // Clear the board
-    matrix = Array(rows)
+    board = Array(rows)
         .fill()
         .map(() => Array(columns).fill(null));
 
@@ -28,73 +28,117 @@ const clearBoard = () => {
     endPos = null;
 };
 
-//  ** Node selection
+//  ** Node
 let startPos = $ref(null);
 let endPos = $ref(null);
+watch(
+    () => startPos,
+    (newVal, oldVal) => {
+        if (newVal) {
+            if (oldVal) {
+                const { row: oldRow, col: oldCol } = oldVal;
+                board[oldRow][oldCol] = null;
+            }
+            const { row, col } = newVal;
+            board[row][col] = "start";
+        }
+    }
+);
 
+watch(
+    () => endPos,
+    (newVal, oldVal) => {
+        if (newVal) {
+            if (oldVal) {
+                const { row: oldRow, col: oldCol } = oldVal;
+                board[oldRow][oldCol] = null;
+            }
+            const { row, col } = newVal;
+            board[row][col] = "end";
+        }
+    }
+);
+
+// ** Node selection
 const nodeStates = ["start", "end", "wall"];
 let selectedState = $ref(0);
 
 const updateState = (position) => {
+    if (path) clearPath();
+
     // Select start node
     if (selectedState === 0) {
-        const { row, col } = position;
-        matrix[row][col] = "start";
-
-        if (startPos) {
-            const { row: oldRow, col: oldCol } = startPos;
-            matrix[oldRow][oldCol] = null;
-        }
-
         startPos = position;
         selectedState = 1;
     } else if (selectedState === 1) {
         // select end node
-        const { row, col } = position;
-        matrix[row][col] = "end";
-
-        if (endPos) {
-            const { row: oldRow, col: oldCol } = endPos;
-            matrix[oldRow][oldCol] = null;
-        }
-
         endPos = position;
         selectedState = 2;
     } else if (selectedState === 2) {
         // select walls
         const { row, col } = position;
-        matrix[row][col] = "wall";
+        board[row][col] = "wall";
     }
 };
 
 const dragToMakeWalls = (event, position) => {
     if (selectedState !== 2 || event.buttons !== 1) return;
+
+    if (path) clearPath();
+
     const { row, col } = position;
-    matrix[row][col] = "wall";
+    board[row][col] = "wall";
 };
 
 // ** Visualizer
+let path = null;
 const startVisualizer = () => {
     if (!startPos || !endPos)
-        return toast.warning("Please choose the start and end node", {
+        return toast.warning("Please choose the Start and End node", {
             position: "top-center",
             timeout: 3000,
             hideProgressBar: true,
         });
 
-    pathFinding.bfsAlgorithm(matrix, startPos, endPos);
+    path = pathFinding.bfsAlgorithm(board, startPos, endPos);
+
+    if (!path)
+        return toast.info("No path found", {
+            position: "top-center",
+            timeout: 2000,
+            hideProgressBar: true,
+        });
+
+    path.forEach((step) => {
+        const [row, col] = step;
+        board[row][col] = "path";
+    });
+};
+
+const clearPath = () => {
+    // Clear old path
+    if (!path) return;
+    path.forEach((step, index) => {
+        const [row, col] = step;
+
+        if (index === 0) startPos = { row, col };
+        else if (index === path.length - 1) endPos = { row, col };
+        else board[row][col] = null;
+    });
+
+    path = null;
 };
 </script>
 
 <template>
     <div class="wrapper">
-        <!-- Matrix container -->
-        <div class="matrix-container">
-            <div v-for="(_, row) in matrix" :key="row" class="row">
+        <!-- board container -->
+        <div class="board-container">
+            <div v-for="(_, row) in board" :key="row" class="row">
                 <Node
-                    v-for="(_, col) in matrix[row]"
+                    v-for="(_, col) in board[row]"
                     :key="col"
-                    :state="matrix[row][col]"
+                    :state="board[row][col]"
                     @click="updateState({ row, col })"
                     @mouseover="dragToMakeWalls($event, { row, col })"
                     @dragstart="dragToMakeWalls($event, { row, col })"
@@ -146,7 +190,7 @@ const startVisualizer = () => {
     margin: 1rem 0;
     width: 100%;
 
-    .matrix-container {
+    .board-container {
         width: 95%;
         margin: 0 auto;
         display: flex;

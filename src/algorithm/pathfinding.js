@@ -29,13 +29,17 @@ const getNeighbours = (row, col, board) => {
 };
 
 const reconstructPath = (prev, board, endPos) => {
+    const path = [];
     const { row: endRow, col: endCol } = endPos;
     let current = [endRow, endCol];
 
     while (current) {
-        board[current[0]][current[1]] = "path";
+        path.push(current);
         current = prev[current[0]][current[1]];
     }
+
+    path.reverse();
+    return path;
 };
 
 const bfsAlgorithm = (board, startPos, endPos) => {
@@ -67,8 +71,7 @@ const bfsAlgorithm = (board, startPos, endPos) => {
 
         // ** Found the end node
         if (row === endRow && col === endCol) {
-            reconstructPath(prev, board, endPos);
-            break;
+            return reconstructPath(prev, board, endPos);
         }
 
         // ** Mark that node is visited
@@ -85,6 +88,8 @@ const bfsAlgorithm = (board, startPos, endPos) => {
             }
         });
     }
+
+    return null;
 };
 
 export default { bfsAlgorithm };
