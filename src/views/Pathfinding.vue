@@ -111,23 +111,19 @@ const startVisualizer = () => {
     pathFinding.bfsAlgorithm(board, startPos, endPos, animations);
 
     animations.forEach((step, index) => {
+        const { state } = step;
+
         setTimeout(() => {
-            const { state } = step;
-            const { checkingNodes } = step;
-            checkingNodes.forEach((node) => {
-                const [row, col] = node;
+            if (state === "visited" || state === "path") {
+                const { row, col } = step;
                 board[row][col] = state;
-            });
-            // if (state === "visited") {
-            //     const { row, col } = step;
-            //     board[row][col] = state;
-            // } else if (state === "checking") {
-            //     const { checkingNodes } = step;
-            //     checkingNodes.forEach((node) => {
-            //         const [row, col] = node;
-            //         board[row][col] = state;
-            //     });
-            // }
+            } else if (state === "checking") {
+                const { checkingNodes } = step;
+                checkingNodes.forEach((node) => {
+                    const [row, col] = node;
+                    board[row][col] = state;
+                });
+            }
         }, index * 1);
     });
 };

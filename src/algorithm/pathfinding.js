@@ -71,14 +71,24 @@ const bfsAlgorithm = (board, startPos, endPos, animations) => {
 
         // ** Found the end node
         if (row === endRow && col === endCol) {
-            reconstructPath(prev, board, endPos);
+            const path = reconstructPath(prev, board, endPos);
+
+            if (path) {
+                path.forEach((node) => {
+                    const [row, col] = node;
+
+                    if (row === startRow && col === startCol) return;
+                    if (row === endRow && col === endCol) return;
+                    animations.push({ row, col, state: "path" });
+                });
+            }
             break;
         }
 
         // ** Mark that node is visited
-        // if (row !== startRow || col !== startCol) {
-        //     animations.push({ row, col, state: "visited" });
-        // }
+        if (row !== startRow || col !== startCol) {
+            animations.push({ row, col, state: "visited" });
+        }
 
         const checkingNodes = [];
         getNeighbours(row, col, board).forEach((neighbours) => {
@@ -94,7 +104,6 @@ const bfsAlgorithm = (board, startPos, endPos, animations) => {
         });
 
         animations.push({ checkingNodes, state: "checking" });
-        animations.push({ checkingNodes, state: "visited" });
     }
 
     return animations;

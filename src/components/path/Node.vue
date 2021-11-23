@@ -8,7 +8,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="node-wrapper" :class="[state, { animation: state }]"></div>
+    <div class="node-wrapper" :class="[state, { animation: state === 'path' }]"></div>
 </template>
 
 <style lang="scss" scope>
@@ -21,9 +21,9 @@ const props = defineProps({
     transition: all 0.2s ease;
     cursor: pointer;
 
-    // &.animation {
-    //     animation: bounce 0.2s linear;
-    // }
+    &.animation {
+        animation: bounce 0.4s linear;
+    }
 
     &.start {
         background-color: lightcoral;
@@ -38,11 +38,11 @@ const props = defineProps({
     }
 
     &.visited {
-        background-color: lightslategrey;
+        background-color: rgb(156, 174, 192);
     }
 
     &.checking {
-        background-color: lightgreen;
+        background-color: #ffbcb5;
     }
 
     &.path {
