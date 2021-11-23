@@ -30,7 +30,7 @@ const props = defineProps({
     }
 
     &.end {
-        background-color: #a0ced9;
+        background-color: #59d7f7;
     }
 
     &.wall {
@@ -38,7 +38,7 @@ const props = defineProps({
     }
 
     &.visited {
-        background-color: rgb(156, 174, 192);
+        background-color: rgb(207, 217, 228);
     }
 
     &.checking {

@@ -16,17 +16,20 @@ let board = $ref(
         .fill()
         .map(() => Array(columns).fill(null))
 );
+let copyBoard = null;
 
 const clearBoard = () => {
     // Clear the board
     board = Array(rows)
         .fill()
         .map(() => Array(columns).fill(null));
-    path = null;
 
+    animations = [];
     selectedState = 0;
     startPos = null;
     endPos = null;
+
+    clearAllTimeout();
 };
 
 //  ** Node
@@ -71,7 +74,7 @@ const nodeStates = ["start", "end", "wall"];
 let selectedState = $ref(0);
 
 const updateState = (position) => {
-    if (path) clearPath();
+    if (animations.length > 0) clearPath();
 
     // Select start node
     if (selectedState === 0) {
@@ -91,14 +94,17 @@ const updateState = (position) => {
 const dragToMakeWalls = (event, position) => {
     if (selectedState !== 2 || event.buttons !== 1) return;
 
-    if (path) clearPath();
+    if (animations.length > 0) clearPath();
 
     const { row, col } = position;
     board[row][col] = "wall";
 };
 
 // ** Visualizer
-let path = null;
+let animations = [];
+const timeoutContainers = [];
+let animationTime = $ref(1);
+
 const startVisualizer = () => {
     if (!startPos || !endPos)
         return toast.warning("Please choose the Start and End node", {
@@ -107,42 +113,47 @@ const startVisualizer = () => {
             hideProgressBar: true,
         });
 
-    const animations = [];
+    // Copy the old board
+    copyBoard = board.map((row) => {
+        return row.slice();
+    });
+
+    // Start animation
     pathFinding.bfsAlgorithm(board, startPos, endPos, animations);
+
+    console.log(animations.length);
 
     animations.forEach((step, index) => {
         const { state } = step;
 
-        setTimeout(() => {
-            if (state === "visited" || state === "path") {
-                const { row, col } = step;
-                board[row][col] = state;
-            } else if (state === "checking") {
-                const { checkingNodes } = step;
-                checkingNodes.forEach((node) => {
-                    const [row, col] = node;
-                    board[row][col] = state;
-                });
-            }
-        }, index * 1);
+        timeoutContainers.push(
+            setTimeout(() => {
+                if (state === "visited" || state === "path") {
+                    const { row, col } = step;
+                    board[row][col] = index === animations.length - 1 ? "end" : state;
+                } else if (state === "checking") {
+                    const { checkingNodes } = step;
+                    checkingNodes.forEach((node) => {
+                        const [row, col] = node;
+                        board[row][col] = state;
+                    });
+                }
+            }, index * animationTime)
+        );
     });
 };
 
 const clearPath = () => {
-    // Clear old path
-    if (!path) return;
+    // Clear old visualizer
+    if (animations.length === 0) return;
+    board = copyBoard;
+    animations = [];
+};
 
-    path.forEach((step, index) => {
-        const [row, col] = step;
-
-        if (index === 0) startPos = { row, col };
-        else if (index === path.length - 1) {
-            endPos = { row, col };
-            console.log("fuck end node");
-        } else board[row][col] = null;
-    });
-
-    path = null;
+const clearAllTimeout = () => {
+    for (let i = 0; i < timeoutContainers.length; i++) {
+        clearTimeout(timeoutContainers[i]);
+    }
 };
 </script>
 
@@ -190,12 +201,27 @@ const clearPath = () => {
 
             <!-- Animation Control -->
             <div class="functions">
-                <button @click="clearBoard">
-                    <i class="fas fa-chess-board"></i>Clear Board
-                </button>
+                <!-- Start Visualizer -->
                 <button @click="startVisualizer" class="start">
                     <i class="fas fa-play-circle"></i>Start Visualizer
                 </button>
+
+                <!-- Clear board -->
+                <button @click="clearBoard" class="clear">
+                    <i class="fas fa-chess-board"></i>Clear Board
+                </button>
+
+                <!-- Animation time -->
+                <div class="slider-container">
+                    <label for="time">Animation Length: {{ animationTime }}</label>
+                    <input
+                        v-model="animationTime"
+                        type="range"
+                        min="1"
+                        max="10"
+                        class="slider"
+                    />
+                </div>
             </div>
         </div>
     </div>
@@ -220,7 +246,6 @@ const clearPath = () => {
     }
 
     .control-panel {
-        border: 1px solid black;
         width: 95%;
         margin: 1rem auto;
         display: flex;
@@ -230,7 +255,8 @@ const clearPath = () => {
             flex: 1;
             display: flex;
             justify-content: space-around;
-            padding: 2rem;
+            align-items: center;
+            gap: 2rem;
 
             button {
                 padding: 0.5em 1.5em;
@@ -255,6 +281,22 @@ const clearPath = () => {
                     border: 2px solid lightgreen;
                     background: lightgreen;
                     color: #222;
+
+                    &:hover {
+                        background: none;
+                        color: #222;
+                    }
+                }
+
+                &.clear {
+                    border: 2px solid lightblue;
+                    background: lightblue;
+                    color: #222;
+
+                    &:hover {
+                        background: none;
+                        color: #222;
+                    }
                 }
 
                 &:hover {
@@ -264,6 +306,19 @@ const clearPath = () => {
 
                 i {
                     margin-right: 10px;
+                }
+            }
+
+            .slider-container {
+                width: 200px;
+
+                label {
+                    font-size: 1.2rem;
+                }
+
+                .slider {
+                    width: 100%;
+                    cursor: pointer;
                 }
             }
         }

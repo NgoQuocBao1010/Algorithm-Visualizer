@@ -78,7 +78,6 @@ const bfsAlgorithm = (board, startPos, endPos, animations) => {
                     const [row, col] = node;
 
                     if (row === startRow && col === startCol) return;
-                    if (row === endRow && col === endCol) return;
                     animations.push({ row, col, state: "path" });
                 });
             }
