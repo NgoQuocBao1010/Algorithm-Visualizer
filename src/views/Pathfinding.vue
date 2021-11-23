@@ -1,6 +1,12 @@
 <script setup>
 import { onMounted } from "vue";
+import { useToast } from "vue-toastification";
+
 import Node from "../components/path/Node.vue";
+
+import pathFinding from "../algorithm/pathfinding.js";
+
+const toast = useToast();
 
 const rows = 12;
 const columns = 40;
@@ -16,8 +22,13 @@ const clearBoard = () => {
     matrix = Array(rows)
         .fill()
         .map(() => Array(columns).fill(null));
+
+    selectedState = 0;
+    startPos = null;
+    endPos = null;
 };
 
+//  ** Node selection
 let startPos = $ref(null);
 let endPos = $ref(null);
 
@@ -60,6 +71,18 @@ const dragToMakeWalls = (event, position) => {
     if (selectedState !== 2 || event.buttons !== 1) return;
     const { row, col } = position;
     matrix[row][col] = "wall";
+};
+
+// ** Visualizer
+const startVisualizer = () => {
+    if (!startPos || !endPos)
+        return toast.warning("Please choose the start and end node", {
+            position: "top-center",
+            timeout: 3000,
+            hideProgressBar: true,
+        });
+
+    pathFinding.bfsAlgorithm(matrix, startPos, endPos);
 };
 </script>
 
@@ -110,7 +133,9 @@ const dragToMakeWalls = (event, position) => {
                 <button @click="clearBoard">
                     <i class="fas fa-chess-board"></i>Clear Board
                 </button>
-                <button><i class="fas fa-play-circle"></i>Start Algorithm</button>
+                <button @click="startVisualizer">
+                    <i class="fas fa-play-circle"></i>Start Visualizer
+                </button>
             </div>
         </div>
     </div>
@@ -172,8 +197,7 @@ const dragToMakeWalls = (event, position) => {
                     color: lightcoral;
                 }
 
-                &:hover,
-                &:focus {
+                &:hover {
                     background: none;
                     color: lightcoral;
                 }

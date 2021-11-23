@@ -20,15 +20,19 @@ const props = defineProps({
     cursor: pointer;
 
     &.start {
-        background-color: lightblue;
+        background-color: lightcoral;
     }
 
     &.end {
-        background-color: lightgreen;
+        background-color: #a0ced9;
     }
 
     &.wall {
         background-color: black;
+    }
+
+    &.path {
+        background-color: lightgreen;
     }
 }
 </style>
