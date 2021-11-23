@@ -24,11 +24,13 @@ watch(
 );
 
 // * Timeout Capture
-const timeoutCapture = [];
+let timeoutCapture = [];
 const clearAllTimeout = () => {
     for (let i = 0; i < timeoutCapture.length; i++) {
         clearTimeout(timeoutCapture[i]);
     }
+
+    timeoutCapture = [];
 };
 
 // * Array itself
@@ -47,11 +49,11 @@ const generateArray = () => {
 // * Sort algorithm
 const mergeSort = () => {
     /* Trigger merge sort animation */
-
-    if (isSorted(array)) return;
+    if (isSorted(array) || timeoutCapture.length > 0) return;
 
     const copyArr = [...array];
     const steps = algorithm.doMergeSort(copyArr);
+    console.log(steps.length);
 
     steps.forEach((step, index) => {
         const bars = document.querySelectorAll("li.element");
@@ -117,6 +119,7 @@ const isSorted = (arr) => {
                     :style="{
                         height: `${calcBarHeight(value)}px`,
                         width: `${barWidth}px !important`,
+                        background: 'lightcoral',
                     }"
                 >
                     <span
@@ -283,7 +286,8 @@ const isSorted = (arr) => {
                 .slider {
                     margin-top: 10px;
                     -webkit-appearance: none;
-                    width: 100%;
+                    width: 200px;
+                    max-width: 200px;
                     height: 25px;
                     background: #fff;
                     outline: none;
