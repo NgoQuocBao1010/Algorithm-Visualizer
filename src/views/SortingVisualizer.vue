@@ -189,7 +189,7 @@ const swap = (pos1, pos2) => {
             <div class="buttons">
                 <button @click="generateArray()">Gerenare new Array</button>
 
-                <button @click="mergeSort()">Sorting</button>
+                <button @click="quickSort()">Sorting</button>
 
                 <!-- Array length input -->
                 <div class="inputs">
