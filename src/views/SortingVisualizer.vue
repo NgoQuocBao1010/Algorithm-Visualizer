@@ -52,6 +52,11 @@ const generateArray = () => {
 
 // * Sort algorithm
 let sortName = $ref("qs");
+watch(
+    () => sortName,
+    () => generateArray()
+);
+
 const startSort = () => {
     if (sortName == "qs") quickSort();
     else if (sortName == "ms") mergeSort();
@@ -214,7 +219,16 @@ const swap = (pos1, pos2) => {
                     </div>
                 </div>
 
-                <div class="status">Sorting ...</div>
+                <div v-if="timeoutCapture.length > 0 && !isSorted(array)" class="status">
+                    Sorting
+                    <div class="spinner">
+                        <div class="spinner-item"></div>
+                        <div class="spinner-item"></div>
+                        <div class="spinner-item"></div>
+                        <div class="spinner-item"></div>
+                        <div class="spinner-item"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Config -->
@@ -342,6 +356,10 @@ const swap = (pos1, pos2) => {
             .status {
                 padding: 0 1rem;
                 margin-left: auto;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                color: lightcoral;
             }
         }
 
@@ -425,6 +443,54 @@ const swap = (pos1, pos2) => {
                     font-size: 1.2rem;
                 }
             }
+        }
+    }
+
+    .spinner {
+        --animation-duration: 1000ms;
+
+        width: 45px;
+        height: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+
+        .spinner-item {
+            width: calc(45px / 12);
+            height: 80%;
+            background: var(--clr-spinner);
+            animation: spinner1 var(--animation-duration) ease-in-out infinite;
+
+            @keyframes spinner1 {
+                50% {
+                    transform: scaleY(0.25);
+                }
+            }
+        }
+
+        .spinner-item:nth-child(1) {
+            --clr-spinner: lightcoral;
+            animation-delay: calc(var(--animation-duration) / 10 * -3);
+        }
+
+        .spinner-item:nth-child(2) {
+            --clr-spinner: lightcoral;
+            animation-delay: calc(var(--animation-duration) / 10 * -1);
+        }
+
+        .spinner-item:nth-child(3) {
+            --clr-spinner: lightcoral;
+            animation-delay: calc(var(--animation-duration) / 10 * -2);
+        }
+
+        .spinner-item:nth-child(4) {
+            --clr-spinner: lightcoral;
+            animation-delay: calc(var(--animation-duration) / 10 * -1);
+        }
+
+        .spinner-item:nth-child(5) {
+            --clr-spinner: lightcoral;
+            animation-delay: calc(var(--animation-duration) / 10 * -3);
         }
     }
 }
