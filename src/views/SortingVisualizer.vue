@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, watch, ref } from "vue";
+import { onMounted, watch } from "vue";
 
 import algorithm from "../algorithm/sorting";
 
@@ -37,6 +37,11 @@ let array = $ref([]);
 const generateArray = () => {
     barWidth = Math.floor(containerWidth / sortConfig.length);
 
+    const bars = document.querySelectorAll("li.element");
+    bars.forEach((bar) => {
+        bar.style.backgroundColor = "lightcoral";
+    });
+
     clearAllTimeout();
 
     array = [];
@@ -46,6 +51,12 @@ const generateArray = () => {
 };
 
 // * Sort algorithm
+let sortName = $ref("qs");
+const startSort = () => {
+    if (sortName == "qs") quickSort();
+    else if (sortName == "ms") mergeSort();
+};
+
 const mergeSort = () => {
     /* Trigger merge sort animation */
     if (isSorted(array) || timeoutCapture.length > 0) return;
@@ -86,7 +97,6 @@ const quickSort = () => {
 
     const copyArr = [...array];
     const steps = algorithm.doQuickSort(copyArr);
-    // console.log(steps);
 
     steps.forEach((step, stepIndex) => {
         const bars = document.querySelectorAll("li.element");
@@ -183,19 +193,34 @@ const swap = (pos1, pos2) => {
             </ul>
         </div>
 
-        <!-- Control Panel -->
-        <div class="control-container">
-            <h3>Sorting Control</h3>
-            <div class="buttons">
-                <button @click="generateArray()">Gerenare new Array</button>
+        <div class="control-panel">
+            <!-- Picking algorithm -->
+            <div class="picking">
+                <p>Sort Algorithm:</p>
+                <div class="sort-options">
+                    <div
+                        class="option"
+                        :class="{ active: sortName == 'qs' }"
+                        @click="sortName = 'qs'"
+                    >
+                        quick sort
+                    </div>
+                    <div
+                        class="option"
+                        :class="{ active: sortName == 'ms' }"
+                        @click="sortName = 'ms'"
+                    >
+                        merge sort
+                    </div>
+                </div>
 
-                <button @click="quickSort()">Sorting</button>
+                <div class="status">Sorting ...</div>
+            </div>
 
-                <!-- Array length input -->
-                <div class="inputs">
-                    <label for="arrayLength">
-                        Array Length: {{ sortConfig.length }}
-                    </label>
+            <!-- Config -->
+            <div class="config">
+                <div class="config__setting">
+                    <p>Array Length:</p>
                     <input
                         v-model="sortConfig.length"
                         type="range"
@@ -205,11 +230,10 @@ const swap = (pos1, pos2) => {
                     />
                 </div>
 
-                <!-- Animation length input -->
-                <div class="inputs">
-                    <label for="animation">
-                        Sort Animation: {{ sortConfig.animationTime }}
-                    </label>
+                <div class="config__setting">
+                    <p style="width: 250px">
+                        Animation time ( {{ sortConfig.animationTime }} ms):
+                    </p>
                     <input
                         v-model="sortConfig.animationTime"
                         type="range"
@@ -218,6 +242,13 @@ const swap = (pos1, pos2) => {
                         class="slider"
                     />
                 </div>
+            </div>
+
+            <div class="control">
+                <button @click="generateArray()">Gerenare new Array</button>
+                <button @click="startSort()">
+                    <i class="fas fa-play-circle"></i> Start Visualizer
+                </button>
             </div>
         </div>
     </div>
@@ -267,79 +298,78 @@ const swap = (pos1, pos2) => {
         }
     }
 
-    .control-container {
+    .control-panel {
         margin: 2rem;
         padding: 1.2rem;
         display: flex;
         gap: 1rem;
         display: flex;
         flex-direction: column;
-        background: rgba(173, 216, 230, 0.6);
         border-radius: 15px;
         box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
             rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
-        .buttons {
-            margin: 1em 0;
+        p {
+            font-size: 1.2rem;
+            width: 200px;
+        }
+
+        .picking {
             display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            gap: 2rem;
+            align-items: center;
+            font-size: 1.2rem;
+            gap: 1rem;
 
-            button {
-                margin-right: 20px;
-                height: 3em;
-                width: 11em;
-                background: rgb(0, 89, 255);
-                color: rgb(255, 255, 255);
-                font-size: 1.05em;
-                border: none;
-                border-radius: 5px;
-                position: relative;
-                background: rgb(0, 89, 255);
-                z-index: 1;
-                transition: all 0.3s ease-out;
+            .sort-options {
+                display: flex;
+                gap: 10px;
 
-                &:hover {
-                    color: black;
+                & > * {
+                    text-transform: capitalize;
+                    padding: 0.4rem 1rem;
+                    border-radius: 1000px;
                     cursor: pointer;
 
-                    &::after {
-                        width: 100%;
-                    }
+                    transition: all 0.3s ease;
                 }
 
-                &::after {
-                    content: " ";
-                    position: absolute;
-                    height: 100%;
-                    width: 0;
-                    background: #fffb0e;
-                    right: 0;
-                    top: 0;
-                    border-radius: 5px;
-                    z-index: -1;
-                    transition: all 0.3s ease-out;
+                .active {
+                    background: rgba(240, 128, 128, 0.9);
+                    color: #fff;
                 }
             }
 
-            .inputs {
-                display: flex;
-                flex-direction: column;
+            .status {
+                padding: 0 1rem;
+                margin-left: auto;
+            }
+        }
 
-                label {
-                    font-size: 20px;
+        .control,
+        .config {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 1rem 0;
+
+            &__setting {
+                display: flex;
+                align-items: center;
+
+                p {
+                    width: max-content;
+                    margin-right: 1rem;
                 }
 
                 .slider {
-                    margin-top: 10px;
                     -webkit-appearance: none;
                     width: 200px;
                     max-width: 200px;
                     height: 25px;
-                    background: #fff;
                     outline: none;
                     opacity: 0.7;
+                    border: 2px solid #04aa6d;
+                    border-radius: 1000px;
                     -webkit-transition: 0.2s;
                     transition: opacity 0.2s;
 
@@ -352,6 +382,47 @@ const swap = (pos1, pos2) => {
                         border-radius: 50%;
                         cursor: pointer;
                     }
+                }
+            }
+
+            button {
+                margin-right: 20px;
+                height: 3em;
+                width: 11em;
+                background: rgb(0, 89, 255);
+                color: rgb(255, 255, 255);
+                font-size: 1rem;
+                border: none;
+                border-radius: 5px;
+                position: relative;
+                background: lightcoral;
+                z-index: 1;
+                transition: all 0.3s ease-out;
+
+                &:hover {
+                    cursor: pointer;
+
+                    &::after {
+                        width: 100%;
+                    }
+                }
+
+                &::after {
+                    content: " ";
+                    position: absolute;
+                    height: 100%;
+                    width: 0;
+                    background: #04aa6d;
+                    right: 0;
+                    top: 0;
+                    border-radius: 5px;
+                    z-index: -1;
+                    transition: all 0.3s ease-out;
+                }
+
+                i {
+                    margin-right: 15px;
+                    font-size: 1.2rem;
                 }
             }
         }
