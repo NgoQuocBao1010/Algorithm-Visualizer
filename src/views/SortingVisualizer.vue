@@ -15,7 +15,7 @@ const calcBarHeight = (value) => {
 
 // * Sort configuaration
 let sortConfig = $ref({
-    length: 50,
+    length: 80,
     animationTime: 5,
 });
 watch(
@@ -51,10 +51,18 @@ const generateArray = () => {
 };
 
 // * Sort algorithm
-let sortName = $ref("qs");
+let sortName = $ref("ms");
 watch(
     () => sortName,
-    () => generateArray()
+    (newVal) => {
+        if (newVal === "ms") {
+            sortConfig.length = 80;
+            sortConfig.animationTime = 5;
+        } else if (newVal === "qs") {
+            sortConfig.length = 80;
+            sortConfig.animationTime = 15;
+        }
+    }
 );
 
 const startSort = () => {
