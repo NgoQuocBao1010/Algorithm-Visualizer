@@ -65,7 +65,7 @@ watch(
     }
 );
 
-const startSort = () => {
+const startVisualizer = () => {
     if (sortName == "qs") quickSort();
     else if (sortName == "ms") mergeSort();
 };
@@ -237,6 +237,10 @@ const swap = (pos1, pos2) => {
                         <div class="spinner-item"></div>
                     </div>
                 </div>
+
+                <div v-if="isSorted(array)" class="status sorted">
+                    Array is Sorted <i class="fas fa-check-circle"></i>
+                </div>
             </div>
 
             <!-- Config -->
@@ -268,7 +272,7 @@ const swap = (pos1, pos2) => {
 
             <div class="control">
                 <button @click="generateArray()">Gerenare new Array</button>
-                <button @click="startSort()">
+                <button @click="startVisualizer()">
                     <i class="fas fa-play-circle"></i> Start Visualizer
                 </button>
             </div>
@@ -368,6 +372,10 @@ const swap = (pos1, pos2) => {
                 align-items: center;
                 gap: 1rem;
                 color: lightcoral;
+
+                &.sorted {
+                    color: #04aa6d;
+                }
             }
         }
 
