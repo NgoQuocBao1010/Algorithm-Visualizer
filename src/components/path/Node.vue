@@ -8,7 +8,11 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="node-wrapper" :class="[state, { animation: state === 'path' }]"></div>
+    <div
+        class="node-wrapper"
+        ondragstart="return false;"
+        :class="[state, { animation: state === 'path' }]"
+    ></div>
 </template>
 
 <style lang="scss" scope>
