@@ -31,11 +31,12 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
+    base: "/Algorithm-Visualizer/",
     routes,
 });
 
 router.beforeEach((to, from, next) => {
-    document.title = `${to.meta.name} | Algo Visulizer`;
+    document.title = `${to.meta.name} | Algo Visualizer`;
     return next();
 });
 
