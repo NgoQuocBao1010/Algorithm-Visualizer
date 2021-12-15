@@ -60,7 +60,11 @@ watch(
             sortConfig.animationTime = 5;
         } else if (newVal === "qs") {
             sortConfig.length = 80;
-            sortConfig.animationTime = 15;
+            sortConfig.animationTime = 10;
+        }
+
+        if (isSorted(array)) {
+            generateArray();
         }
     }
 );
