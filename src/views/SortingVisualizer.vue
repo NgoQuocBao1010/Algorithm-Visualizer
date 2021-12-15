@@ -1,7 +1,11 @@
 <script setup>
 import { onMounted, watch } from "vue";
+import { useToast } from "vue-toastification";
 
 import algorithm from "../algorithm/sorting";
+
+// * Toast notification
+const toast = useToast();
 
 // * Array Container
 let arrayContainer = $ref(null);
@@ -70,14 +74,25 @@ watch(
 );
 
 const startVisualizer = () => {
+    if (isSorted(array))
+        return toast.info("Array is already sorted", {
+            position: "top-center",
+            timeout: 2000,
+            hideProgressBar: true,
+        });
+
+    if (timeoutCapture.length > 0)
+        return toast.info("Array is sorting ...", {
+            position: "top-center",
+            timeout: 1500,
+            hideProgressBar: true,
+        });
+
     if (sortName == "qs") quickSort();
     else if (sortName == "ms") mergeSort();
 };
 
 const mergeSort = () => {
-    /* Trigger merge sort animation */
-    if (isSorted(array) || timeoutCapture.length > 0) return;
-
     const copyArr = [...array];
     const steps = algorithm.doMergeSort(copyArr);
 
@@ -110,8 +125,6 @@ const mergeSort = () => {
 };
 
 const quickSort = () => {
-    if (isSorted(array) || timeoutCapture.length > 0) return;
-
     const copyArr = [...array];
     const steps = algorithm.doQuickSort(copyArr);
 
