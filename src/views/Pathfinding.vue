@@ -29,6 +29,14 @@ const clearBoard = () => {
     startPos = null;
     endPos = null;
 
+    for (let i = 0; i < board.length; i++) {
+        const row = board[i];
+
+        for (let j = 0; j < row.length; j++) {
+            document.getElementById(`node_${i}_${j}`).className = `node-wrapper`;
+        }
+    }
+
     clearAllTimeout();
 };
 
@@ -91,19 +99,34 @@ const updateState = (position) => {
     }
 };
 
-const dragToMakeWalls = (event, position) => {
-    if (selectedState !== 2 || event.buttons !== 1) return;
+// * Handle drag to  make walls
+let isPressed = $ref(false);
+const handleMouseDown = (position) => {
+    if (selectedState !== 2) return;
 
-    if (animations.length > 0) clearPath();
+    updateState(position);
+    isPressed = true;
+};
 
-    const { row, col } = position;
-    board[row][col] = "wall";
+const handleMouseEnter = (position) => {
+    if (selectedState !== 2 || !isPressed) return;
+
+    updateState(position);
+};
+
+const handleMouseUp = (position) => {
+    if (selectedState !== 2 || !isPressed) return;
+
+    updateState(position);
+    isPressed = false;
+
+    console.log("Mouse up");
 };
 
 // ** Visualizer
 let animations = [];
 const timeoutContainers = [];
-let animationTime = $ref(1);
+let animationTime = $ref(3);
 
 const startVisualizer = () => {
     if (!startPos || !endPos)
@@ -122,18 +145,24 @@ const startVisualizer = () => {
     pathFinding.bfsAlgorithm(board, startPos, endPos, animations);
 
     animations.forEach((step, index) => {
-        const { state } = step;
+        let { state } = step;
 
         timeoutContainers.push(
             setTimeout(() => {
                 if (state === "visited" || state === "path") {
                     const { row, col } = step;
-                    board[row][col] = index === animations.length - 1 ? "end" : state;
+                    state = index === animations.length - 1 ? "end" : state;
+
+                    document.getElementById(
+                        `node_${row}_${col}`
+                    ).className = `node-wrapper ${state}`;
                 } else if (state === "checking") {
                     const { checkingNodes } = step;
                     checkingNodes.forEach((node) => {
                         const [row, col] = node;
-                        board[row][col] = state;
+                        document.getElementById(
+                            `node_${row}_${col}`
+                        ).className = `node-wrapper ${state}`;
                     });
                 }
             }, index * animationTime)
@@ -145,10 +174,22 @@ const clearPath = () => {
     // Clear old visualizer
     if (animations.length === 0) return;
     board = copyBoard;
+
+    for (let i = 0; i < board.length; i++) {
+        const row = board[i];
+
+        for (let j = 0; j < row.length; j++) {
+            const node = board[i][j];
+
+            if (node === "visited")
+                document.getElementById(`node_${i}_${j}`).className = `node-wrapper`;
+        }
+    }
     animations = [];
 };
 
 const clearAllTimeout = () => {
+    // Clear all timeout
     while (timeoutContainers.length > 0) {
         const timeout = timeoutContainers.pop();
         clearTimeout(timeout);
@@ -163,13 +204,13 @@ const clearAllTimeout = () => {
             <div v-for="(_, row) in board" :key="row" class="row">
                 <Node
                     v-for="(_, col) in board[row]"
+                    :id="`node_${row}_${col}`"
                     :key="col"
                     :state="board[row][col]"
                     @click="updateState({ row, col })"
-                    @mouseover="dragToMakeWalls($event, { row, col })"
-                    @dragstart="dragToMakeWalls($event, { row, col })"
-                    @dragover.prevent="dragToMakeWalls($event, { row, col })"
-                    @dragenter.prevent="dragToMakeWalls($event, { row, col })"
+                    @mousedown="handleMouseDown({ row, col })"
+                    @mouseenter="handleMouseEnter({ row, col })"
+                    @mouseup="handleMouseUp({ row, col })"
                 />
             </div>
         </div>
