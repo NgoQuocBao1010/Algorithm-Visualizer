@@ -411,29 +411,6 @@ const swap = (pos1, pos2) => {
                     width: max-content;
                     margin-right: 1rem;
                 }
-
-                .slider {
-                    -webkit-appearance: none;
-                    width: 200px;
-                    max-width: 200px;
-                    height: 25px;
-                    outline: none;
-                    opacity: 0.7;
-                    border: 2px solid #04aa6d;
-                    border-radius: 1000px;
-                    -webkit-transition: 0.2s;
-                    transition: opacity 0.2s;
-
-                    &::-webkit-slider-thumb {
-                        -webkit-appearance: none;
-                        appearance: none;
-                        width: 25px;
-                        height: 25px;
-                        background: #04aa6d;
-                        border-radius: 50%;
-                        cursor: pointer;
-                    }
-                }
             }
 
             button {
