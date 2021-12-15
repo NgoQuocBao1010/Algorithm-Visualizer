@@ -119,14 +119,12 @@ const handleMouseUp = (position) => {
 
     updateState(position);
     isPressed = false;
-
-    console.log("Mouse up");
 };
 
 // ** Visualizer
 let animations = [];
 const timeoutContainers = [];
-let animationTime = $ref(3);
+let animationTime = $ref(4);
 
 const startVisualizer = () => {
     if (!startPos || !endPos)
@@ -208,8 +206,9 @@ const clearPath = () => {
         for (let j = 0; j < row.length; j++) {
             const node = board[i][j];
 
-            if (node === "visited")
+            if (node !== "start" && node !== "end" && node !== "wall") {
                 document.getElementById(`node_${i}_${j}`).className = `node-wrapper`;
+            }
         }
     }
     animations = [];

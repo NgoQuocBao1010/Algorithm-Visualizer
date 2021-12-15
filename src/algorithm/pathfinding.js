@@ -96,7 +96,7 @@ const bfsAlgorithm = (board, startPos, endPos, animations) => {
         animations.push({ checkingNodes, state: "checking" });
     }
 
-    return animations;
+    return [];
 };
 
 export default { bfsAlgorithm };
