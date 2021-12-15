@@ -142,7 +142,7 @@ const startVisualizer = () => {
     });
 
     // Start animation
-    pathFinding.bfsAlgorithm(board, startPos, endPos, animations);
+    const path = pathFinding.bfsAlgorithm(board, startPos, endPos, animations);
 
     animations.forEach((step, index) => {
         let { state } = step;
@@ -151,8 +151,6 @@ const startVisualizer = () => {
             setTimeout(() => {
                 if (state === "visited" || state === "path") {
                     const { row, col } = step;
-                    state = index === animations.length - 1 ? "end" : state;
-
                     document.getElementById(
                         `node_${row}_${col}`
                     ).className = `node-wrapper ${state}`;
@@ -165,7 +163,36 @@ const startVisualizer = () => {
                         ).className = `node-wrapper ${state}`;
                     });
                 }
+                if (index == animations.length - 1) {
+                    if (path.length === 0) {
+                        toast.info("No path found", {
+                            position: "top-center",
+                            timeout: 2000,
+                            hideProgressBar: true,
+                        });
+                    } else {
+                        pathVisualizer(path);
+                    }
+                }
             }, index * animationTime)
+        );
+    });
+};
+
+const pathVisualizer = (path) => {
+    path.forEach((node, index) => {
+        const [row, col] = node;
+
+        if (index === 0) return;
+
+        timeoutContainers.push(
+            setTimeout(() => {
+                const state = index === path.length - 1 ? "end" : "path";
+
+                document.getElementById(
+                    `node_${row}_${col}`
+                ).className = `node-wrapper ${state} animation`;
+            }, 25 * index)
         );
     });
 };

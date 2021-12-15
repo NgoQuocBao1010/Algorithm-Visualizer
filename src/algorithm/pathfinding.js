@@ -29,6 +29,7 @@ const getNeighbours = (row, col, board) => {
 };
 
 const reconstructPath = (prev, board, endPos) => {
+    // * Reconstruct the path from the "previous" array
     const path = [];
     const { row: endRow, col: endCol } = endPos;
     let current = [endRow, endCol];
@@ -44,17 +45,17 @@ const reconstructPath = (prev, board, endPos) => {
 
 const bfsAlgorithm = (board, startPos, endPos, animations) => {
     // ** Breadth-First Search algorithm
+    // Mark visited node
     let visited = board.map((row) => {
         return row.slice().fill(false);
     });
+    // Contain previous node to construct path
     let prev = board.map((row) => {
         return row.slice().fill(null);
     });
 
     const { row: startRow, col: startCol } = startPos;
     const { row: endRow, col: endCol } = endPos;
-
-    // console.log(`(${startRow}, ${startCol}), (${endRow}, ${endCol})`);
 
     // ** Initialize row and col queues
     const rowQueue = [];
@@ -71,17 +72,7 @@ const bfsAlgorithm = (board, startPos, endPos, animations) => {
 
         // ** Found the end node
         if (row === endRow && col === endCol) {
-            const path = reconstructPath(prev, board, endPos);
-
-            if (path) {
-                path.forEach((node) => {
-                    const [row, col] = node;
-
-                    if (row === startRow && col === startCol) return;
-                    animations.push({ row, col, state: "path" });
-                });
-            }
-            break;
+            return reconstructPath(prev, board, endPos);
         }
 
         // ** Mark that node is visited
